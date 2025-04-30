@@ -1,4 +1,4 @@
-Kode adalah sebuah **dashboard analisis teknikal harga aset** berbasis web menggunakan **Streamlit**. Meskipun kode itu kompleks, konsep di baliknya cukup terstruktur dan mengikuti alur kerja yang logis dari pengumpulan data sampai visualisasi dan alert. Berikut penjelasan konsep dan strategi yang digunakan tanpa membahas kode spesifik:
+Kode ini adalah sebuah **dashboard analisis teknikal harga aset** berbasis web menggunakan **Streamlit**. Meskipun kode itu kompleks, konsep di baliknya cukup terstruktur dan mengikuti alur kerja yang logis dari pengumpulan data sampai visualisasi dan alert. Berikut penjelasan konsep dan strategi yang digunakan tanpa membahas kode spesifik:
 
 ---
 
