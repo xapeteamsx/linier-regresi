@@ -67,7 +67,7 @@ def plot_regresi(df, hasil_regresi, theme):
     fig = go.Figure()
 
     # Harga close
-    fig.add_trace(go.Scatter(x=df['datetime'], y=df['close'], mode='lines', name='Close', line=dict(color='black')))
+    fig.add_trace(go.Scatter(x=df['datetime'], y=df['close'], mode='lines', name='Close', line=dict(color='gray')))
 
     # SMA & EMA
     fig.add_trace(go.Scatter(x=df['datetime'], y=df['SMA20'], mode='lines', name='SMA20', line=dict(color='orange', dash='dash')))
