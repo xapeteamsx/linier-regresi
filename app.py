@@ -9,6 +9,20 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from utils import fetch_data, add_technical_indicators, linear_regression, kirim_telegram
+import base64
+
+print(hasattr(st, "modal"))
+
+
+# --- Session State Initialization ---
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+if 'username' not in st.session_state:
+    st.session_state.username = None
+if 'show_alert' not in st.session_state:
+    st.session_state.show_alert = False
+if 'alert_start_time' not in st.session_state:
+    st.session_state.alert_start_time = None
 
 
 # --- Login State ---
@@ -62,6 +76,18 @@ run = st.sidebar.toggle("Start / Stop", value=False)
 bot_token = st.sidebar.text_input("Telegram Bot Token", type="password")
 chat_id = st.sidebar.text_input("Telegram Chat ID")
 
+
+def play_alert_sound(file_path="alert.mp3"):
+    with open(file_path, "rb") as audio_file:
+        audio_bytes = audio_file.read()
+        b64_audio = base64.b64encode(audio_bytes).decode()
+        audio_html = f"""
+        <audio autoplay>
+            <source src="data:audio/mp3;base64,{b64_audio}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+        """
+        st.markdown(audio_html, unsafe_allow_html=True)
 
 def plot_regresi(df, hasil_regresi, theme):
     fig = go.Figure()
@@ -208,21 +234,51 @@ if run:
         toleransi_bawah_terendah = hasil_regresi['prediksi'] - toleransi_levels[-1]
 
 
-        harga_terakhir = df['close'].iloc[-1]
-        # regresi_terakhir = hasil_regresi[-1]
-        regresi_terakhir = hasil_regresi['prediksi'][-1]
-        atas_tertinggi = toleransi_atas_tertinggi[-1]
-        bawah_terendah = toleransi_bawah_terendah[-1]
+        low_terakhir = df['low'].iloc[-1]
+        high_terakhir = df['high'].iloc[-1]
+
+        # Ambil zona merah (atas)
+        atas_bawah = hasil_regresi['toleransi_atas'][-2]
+        atas_atas = hasil_regresi['toleransi_atas'][-1]
+
+        # Ambil zona biru (bawah)
+        bawah_atas = hasil_regresi['toleransi_bawah'][-2]
+        bawah_bawah = hasil_regresi['toleransi_bawah'][-1]
 
         alert_message = None
 
-        if harga_terakhir >= atas_tertinggi:
-            alert_message = f"🚨 Harga <b>{pair_code}</b> MENYENTUH <b>TOLERANSI ATAS TERTINGGI</b>!\n\nHarga Close: {harga_terakhir}\nRegresi Atas: {atas_tertinggi}"
-        elif harga_terakhir <= bawah_terendah:
-            alert_message = f"🚨 Harga <b>{pair_code}</b> MENYENTUH <b>TOLERANSI BAWAH TERENDAH</b>!\n\nHarga Close: {harga_terakhir}\nRegresi Bawah: {bawah_terendah}"
+        # Cek apakah harga HIGH menyentuh Zona Merah
+        if atas_bawah[-1] <= high_terakhir <= atas_atas[-1]:
+            alert_message = f"🚨 Harga (High) <b>{pair_code}</b> MASUK <b>ZONA MERAH</b>!\n\nHarga High: {high_terakhir}\nRentang: {atas_bawah[-1]} - {atas_atas[-1]}"
+
+        # Cek apakah harga LOW menyentuh Zona Biru
+        elif bawah_bawah[-1] <= low_terakhir <= bawah_atas[-1]:
+            alert_message = f"🚨 Harga (Low) <b>{pair_code}</b> MASUK <b>ZONA BIRU</b>!\n\nHarga Low: {low_terakhir}\nRentang: {bawah_bawah[-1]} - {bawah_atas[-1]}"
+
 
         if alert_message:
             print(alert_message)
+
+        # Set trigger jika alert muncul
+        if alert_message:
+            st.session_state.show_alert = True
+            st.session_state.alert_start_time = time.time()
+            play_alert_sound("alert.mp3")  # atau nama file lain
+
+        # Tampilkan modal jika kondisi masih berlaku (max 30 detik)
+        if st.session_state.show_alert:
+            elapsed = time.time() - st.session_state.alert_start_time
+            if elapsed <= 30:
+                with st.expander("🚨 ALERT (Klik untuk buka/tutup)"):
+                    st.markdown(alert_message, unsafe_allow_html=True)
+                    st.markdown(f"⏱️ Tersisa {int(30 - elapsed)} detik sebelum alert ditutup otomatis...")
+                
+                # with st.modal("🚨 ALERT (auto-close in 30s)"):
+                #     st.markdown(alert_message, unsafe_allow_html=True)
+                #     st.markdown(f"⏱️ Menutup otomatis dalam {int(30 - elapsed)} detik...")
+            else:
+                st.session_state.show_alert = False
+                st.session_state.alert_start_time = None
 
         if alert_message and bot_token and chat_id:
             kirim_telegram(alert_message, bot_token, chat_id)
