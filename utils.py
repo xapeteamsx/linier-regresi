@@ -58,17 +58,6 @@ def add_technical_indicators(df):
 
     return df
 
-'''
-def linear_regression(df):
-    waktu_numeric = df['datetime'].astype(np.int64) // 10**9
-    harga = df['close'].values
-
-    model = LinearRegression()
-    model.fit(waktu_numeric.values.reshape(-1, 1), harga)
-    prediksi = model.predict(waktu_numeric.values.reshape(-1, 1))
-    return prediksi
-'''
-
 def linear_regression(df, max_dev_multiplier=3):
     # Konversi datetime ke detik UNIX dan ke array NumPy
     waktu_numeric = np.array(df['datetime'].astype(np.int64) // 10**9).reshape(-1, 1)
@@ -78,6 +67,7 @@ def linear_regression(df, max_dev_multiplier=3):
     model = LinearRegression()
     model.fit(waktu_numeric, harga)
     prediksi = model.predict(waktu_numeric)
+    slope = model.coef_[0]
 
     residual = harga - prediksi
     std_dev = np.std(residual)
@@ -94,7 +84,8 @@ def linear_regression(df, max_dev_multiplier=3):
         'std_dev': std_dev,
         'levels': levels,
         'toleransi_atas': toleransi_atas,
-        'toleransi_bawah': toleransi_bawah
+        'toleransi_bawah': toleransi_bawah,
+        'slope': slope
     }
 
 
