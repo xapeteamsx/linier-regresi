@@ -208,7 +208,7 @@ if run:
                   <li><b>BUY</b> → jika garis <i>close</i> atau <i>low</i> berada di zona <span style="color:blue;">buy (berwarna biru)</span></li>
                   <li><b>SELL</b> → jika garis <i>close</i> atau <i>high</i> memasuki area <span style="color:red;">sell (berwarna merah)</span></li>
                 </ul>
-                <p><b>⚠️ Saran:</b> Selalu konfirmasi sinyal BUY atau SELL dengan indikator pendukung lain (misal MACD, RSI, volume) sebelum mengambil keputusan.</p>
+                <p><b>⚠️ Saran:</b> Alarm akan otomatis berbunyi pada saat memasuki area BUY / SELL tersebut. Selalu konfirmasi sinyal BUY atau SELL dengan indikator pendukung lain (misal MACD, RSI, volume) sebelum mengambil keputusan.</p>
                 </div>
                 """,
                 unsafe_allow_html=True,
