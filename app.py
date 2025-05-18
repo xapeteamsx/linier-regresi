@@ -36,7 +36,7 @@ run = st.sidebar.toggle("Start / Stop", value=False)
 
 bot_token = st.sidebar.text_input("Telegram Bot Token", type="password")
 chat_id = st.sidebar.text_input("Telegram Chat ID")
-
+data_length = 90
 
 def play_alert_sound(file_path="alert.mp3"):
     with open(file_path, "rb") as audio_file:
@@ -146,7 +146,7 @@ if run:
             continue
 
         df = df[["timestamp", "open", "high", "low", "close"]]
-        df = df.tail(1140)
+        df = df.tail(data_length)
         df = add_technical_indicators(df)
         hasil_regresi = linear_regression(df)
 
