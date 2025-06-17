@@ -36,7 +36,7 @@ run = st.sidebar.toggle("Start / Stop", value=False)
 
 bot_token = st.sidebar.text_input("Telegram Bot Token", type="password")
 chat_id = st.sidebar.text_input("Telegram Chat ID")
-data_length = 90
+data_length = 30
 
 def play_alert_sound(file_path="alert.mp3"):
     with open(file_path, "rb") as audio_file:
