@@ -168,8 +168,6 @@ if run:
         alert_message = None
 
         slope = hasil_regresi['slope']
-
-        slope = hasil_regresi['slope']
         slope_sebelumnya = hasil_regresi['slope_history'][-6]  # 5 bar sebelumnya (indeks -6)
 
         alert_message = None
