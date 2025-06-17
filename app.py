@@ -127,6 +127,10 @@ def plot_macd_rsi(df, theme):
 if run:
     placeholder = st.empty()
     aa = 1
+
+    if 'slope_history' not in st.session_state:
+        st.session_state.slope_history = []
+
     while True:
         raw_data = fetch_data(pair_code, timeframe)
         if len(raw_data) < 30:
@@ -168,29 +172,34 @@ if run:
         alert_message = None
 
         slope = hasil_regresi['slope']
-        slope_sebelumnya = hasil_regresi['slope'][-6]  # 5 bar sebelumnya (indeks -6)
+
+        st.session_state.slope_history.append(slope)
+        if len(st.session_state.slope_history) > 10:
+            st.session_state.slope_history.pop(0)
+
 
         alert_message = None
         alarm = None
 
-        # Alert ZONA MERAH (High sentuh zona merah saat slope turun)
-        if slope < slope_sebelumnya and atas_bawah[-1] <= high_terakhir <= atas_atas[-1]:
-            alarm = "alert1.mp3"
-            alert_message = (
-                f"🚨 Harga (High) <b>{pair_code}</b> MASUK <b>ZONA MERAH</b> dengan SLOPE MENAIK!\n\n"
-                f"Harga High: {high_terakhir}\nRentang: {atas_bawah[-1]} - {atas_atas[-1]}\n"
-                f"Slope Sekarang: {slope:.10f}\nSlope 5 Menit Lalu: {slope_sebelumnya:.10f}"
-            )
+        if len(st.session_state.slope_history) >= 6:
+            slope_sekarang = st.session_state.slope_history[-1]
+            slope_5_menit_lalu = st.session_state.slope_history[-6]
 
-        # Alert ZONA BIRU (Low sentuh zona biru saat slope naik)
-        elif slope > slope_sebelumnya and bawah_bawah[-1] <= low_terakhir <= bawah_atas[-1]:
-            alarm = "alert2.mp3"
-            alert_message = (
-                f"🚨 Harga (Low) <b>{pair_code}</b> MASUK <b>ZONA BIRU</b> dengan SLOPE MENURUN!\n\n"
-                f"Harga Low: {low_terakhir}\nRentang: {bawah_bawah[-1]} - {bawah_atas[-1]}\n"
-                f"Slope Sekarang: {slope:.10f}\nSlope 5 Menit Lalu: {slope_sebelumnya:.10f}"
-            )
+            # Slope naik dan masuk zona biru
+            if slope_sekarang > slope_5_menit_lalu and bawah_bawah[-1] <= low_terakhir <= bawah_atas[-1]:
+                alert_message = (
+                    f"🚨 Harga (Low) <b>{pair_code}</b> MASUK <b>ZONA BIRU</b> dengan slope NAIK!\n\n"
+                    f"Harga Low: {low_terakhir}\nRentang: {bawah_bawah[-1]} - {bawah_atas[-1]}\n"
+                    f"Slope sekarang: {slope_sekarang:.10f}\nSlope 5 bar lalu: {slope_5_menit_lalu:.10f}"
+                )
 
+            # Slope turun dan masuk zona merah
+            elif slope_sekarang < slope_5_menit_lalu and atas_bawah[-1] <= high_terakhir <= atas_atas[-1]:
+                alert_message = (
+                    f"🚨 Harga (High) <b>{pair_code}</b> MASUK <b>ZONA MERAH</b> dengan slope TURUN!\n\n"
+                    f"Harga High: {high_terakhir}\nRentang: {atas_bawah[-1]} - {atas_atas[-1]}\n"
+                    f"Slope sekarang: {slope_sekarang:.10f}\nSlope 5 bar lalu: {slope_5_menit_lalu:.10f}"
+                )
 
         if alert_message:
             print(alert_message)
