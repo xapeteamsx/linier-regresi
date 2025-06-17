@@ -187,6 +187,7 @@ if run:
 
             # Slope naik dan masuk zona biru
             if slope_sekarang > slope_5_menit_lalu and bawah_bawah[-1] <= low_terakhir <= bawah_atas[-1]:
+                alarm = "alert1.mp3"                
                 alert_message = (
                     f"🚨 Harga (Low) <b>{pair_code}</b> MASUK <b>ZONA BIRU</b> dengan slope NAIK!\n\n"
                     f"Harga Low: {low_terakhir}\nRentang: {bawah_bawah[-1]} - {bawah_atas[-1]}\n"
@@ -195,6 +196,7 @@ if run:
 
             # Slope turun dan masuk zona merah
             elif slope_sekarang < slope_5_menit_lalu and atas_bawah[-1] <= high_terakhir <= atas_atas[-1]:
+                alarm = "alert2.mp3"                 
                 alert_message = (
                     f"🚨 Harga (High) <b>{pair_code}</b> MASUK <b>ZONA MERAH</b> dengan slope TURUN!\n\n"
                     f"Harga High: {high_terakhir}\nRentang: {atas_bawah[-1]} - {atas_atas[-1]}\n"
