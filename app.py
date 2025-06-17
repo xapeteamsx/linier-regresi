@@ -129,7 +129,7 @@ if run:
     aa = 1
     while True:
         raw_data = fetch_data(pair_code, timeframe)
-        if len(raw_data) < 100:
+        if len(raw_data) < 30:
             raw_data = fetch_data(pair_code, timeframe, 1)
 
         if raw_data is None:
@@ -169,20 +169,25 @@ if run:
 
         slope = hasil_regresi['slope']
 
-        # Alert untuk zona MERAH saat slope NEGATIF
-        if slope < 0.0000000000 and atas_bawah[-1] <= high_terakhir <= atas_atas[-1]:
+        slope = hasil_regresi['slope']
+        slope_sebelumnya = hasil_regresi['slope_history'][-6]  # 5 bar sebelumnya (indeks -6)
+
+        alert_message = None
+
+        # Alert ZONA MERAH (High sentuh zona merah saat slope turun)
+        if slope < slope_sebelumnya and atas_bawah[-1] <= high_terakhir <= atas_atas[-1]:
             alert_message = (
-                f"🚨 Harga (High) <b>{pair_code}</b> MASUK <b>ZONA MERAH</b>!\n\n"
+                f"🚨 Harga (High) <b>{pair_code}</b> MASUK <b>ZONA MERAH</b> dengan SLOPE MENAIK!\n\n"
                 f"Harga High: {high_terakhir}\nRentang: {atas_bawah[-1]} - {atas_atas[-1]}\n"
-                f"Slope: {slope:.10f}"
+                f"Slope Sekarang: {slope:.10f}\nSlope 5 Menit Lalu: {slope_sebelumnya:.10f}"
             )
 
-        # Alert untuk zona BIRU saat slope POSITIF
-        elif slope > 0.0000000001 and bawah_bawah[-1] <= low_terakhir <= bawah_atas[-1]:
+        # Alert ZONA BIRU (Low sentuh zona biru saat slope naik)
+        elif slope > slope_sebelumnya and bawah_bawah[-1] <= low_terakhir <= bawah_atas[-1]:
             alert_message = (
-                f"🚨 Harga (Low) <b>{pair_code}</b> MASUK <b>ZONA BIRU</b>!\n\n"
+                f"🚨 Harga (Low) <b>{pair_code}</b> MASUK <b>ZONA BIRU</b> dengan SLOPE MENURUN!\n\n"
                 f"Harga Low: {low_terakhir}\nRentang: {bawah_bawah[-1]} - {bawah_atas[-1]}\n"
-                f"Slope: {slope:.10f}"
+                f"Slope Sekarang: {slope:.10f}\nSlope 5 Menit Lalu: {slope_sebelumnya:.10f}"
             )
 
 
