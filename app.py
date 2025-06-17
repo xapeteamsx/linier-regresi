@@ -171,9 +171,11 @@ if run:
         slope_sebelumnya = hasil_regresi['slope_history'][-6]  # 5 bar sebelumnya (indeks -6)
 
         alert_message = None
+        alarm = None
 
         # Alert ZONA MERAH (High sentuh zona merah saat slope turun)
         if slope < slope_sebelumnya and atas_bawah[-1] <= high_terakhir <= atas_atas[-1]:
+            alarm = "alert1.mp3"
             alert_message = (
                 f"🚨 Harga (High) <b>{pair_code}</b> MASUK <b>ZONA MERAH</b> dengan SLOPE MENAIK!\n\n"
                 f"Harga High: {high_terakhir}\nRentang: {atas_bawah[-1]} - {atas_atas[-1]}\n"
@@ -182,6 +184,7 @@ if run:
 
         # Alert ZONA BIRU (Low sentuh zona biru saat slope naik)
         elif slope > slope_sebelumnya and bawah_bawah[-1] <= low_terakhir <= bawah_atas[-1]:
+            alarm = "alert2.mp3"
             alert_message = (
                 f"🚨 Harga (Low) <b>{pair_code}</b> MASUK <b>ZONA BIRU</b> dengan SLOPE MENURUN!\n\n"
                 f"Harga Low: {low_terakhir}\nRentang: {bawah_bawah[-1]} - {bawah_atas[-1]}\n"
@@ -193,7 +196,7 @@ if run:
             print(alert_message)
             st.session_state.show_alert = True
             st.session_state.alert_start_time = time.time()
-            play_alert_sound("alert.mp3")
+            play_alert_sound(alarm)
 
         if st.session_state.show_alert:
             elapsed = time.time() - st.session_state.alert_start_time
