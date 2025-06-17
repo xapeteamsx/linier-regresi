@@ -186,7 +186,7 @@ if run:
             slope_5_menit_lalu = st.session_state.slope_history[-6]
 
             # Slope naik dan masuk zona biru
-            if slope_sekarang > slope_5_menit_lalu and bawah_bawah[-1] <= low_terakhir <= bawah_atas[-1]:
+            if slope_sekarang >= slope_5_menit_lalu and bawah_bawah[-1] <= low_terakhir <= bawah_atas[-1]:
                 alarm = "alert1.mp3"                
                 alert_message = (
                     f"🚨 Harga (Low) <b>{pair_code}</b> MASUK <b>ZONA BIRU</b> dengan slope NAIK!\n\n"
@@ -195,7 +195,7 @@ if run:
                 )
 
             # Slope turun dan masuk zona merah
-            elif slope_sekarang < slope_5_menit_lalu and atas_bawah[-1] <= high_terakhir <= atas_atas[-1]:
+            elif slope_sekarang <= slope_5_menit_lalu and atas_bawah[-1] <= high_terakhir <= atas_atas[-1]:
                 alarm = "alert2.mp3"                 
                 alert_message = (
                     f"🚨 Harga (High) <b>{pair_code}</b> MASUK <b>ZONA MERAH</b> dengan slope TURUN!\n\n"
